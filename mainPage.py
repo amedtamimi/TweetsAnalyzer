@@ -1,3 +1,4 @@
+import imp
 import streamlit as st
 import os
 import functions
@@ -8,6 +9,16 @@ if "button_clicked" not in st.session_state:
 
 def callback():
     st.session_state.button_clicked = True
+
+def featchData(hashtag_name,fromDate,numberOfLikes):
+    tweets = twint.Config
+    tweets.Search = [hashtag_name]
+    tweets.Limit = 100
+    tweets.Min_likes =numberOfLikes
+    tweets.Since = fromDate
+    tweets.Store_csv = True
+    tweets.Output = f'{hashtag_name}.csv'
+    twint.run.Search(tweets)
 
 st.title('Just Put Any HASHTAG YOU Want To Analys it  !!!')
 text_Input = st.text_input('put Hashtag',placeholder="#twitter")
@@ -41,7 +52,7 @@ with space3:
     analysButton = st.button('lets Analyize',on_click= callback)
     
 if analysButton or st.session_state.button_clicked:
-    functions.featchData(text_Input,str(dateInputIn),numberOfLikes)
+    featchData(text_Input,str(dateInputIn),numberOfLikes)
     df = functions.getData(text_Input,selectBox)
 
     st.markdown("### Data preview")
