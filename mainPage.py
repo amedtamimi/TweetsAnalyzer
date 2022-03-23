@@ -1,9 +1,6 @@
-
 import streamlit as st
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import os
 import functions
-import time
 import numpy as np
 
 
