@@ -1,10 +1,9 @@
-twint @ git+https://github.com/twintproject/twint.git@e7c8a0c764f6879188e5c21e25fb6f1f856a7221
+git+git://github.com/dataprojectswithMJ/twint.git
 streamlit==1.7.0
-nltk==3.6.1
+nltk==3.5
 pandas==1.2.4
 numpy== 1.22.3
 wordcloud==1.8.1
 matplotlib==3.1
 PyArabic==0.6.14
 ar_wordcloud==0.0.4
-
