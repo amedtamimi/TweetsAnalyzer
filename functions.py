@@ -9,15 +9,15 @@ from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 from pyarabic.araby import tokenize,is_arabicrange,strip_tashkeel
 from ar_wordcloud import ArabicWordCloud
-def featchData(hashtag_name,fromDate,numberOfLikes):
-    tweets = twint.Config
-    tweets.Search = [hashtag_name]
-    tweets.Limit = 100
-    tweets.Min_likes =numberOfLikes
-    tweets.Since = fromDate
-    tweets.Store_csv = True
-    tweets.Output = f'{hashtag_name}.csv'
-    twint.run.Search(tweets)
+# def featchData(hashtag_name,fromDate,numberOfLikes):
+#     tweets = twint.Config
+#     tweets.Search = [hashtag_name]
+#     tweets.Limit = 100
+#     tweets.Min_likes =numberOfLikes
+#     tweets.Since = fromDate
+#     tweets.Store_csv = True
+#     tweets.Output = f'{hashtag_name}.csv'
+#     twint.run.Search(tweets)
 def getData(input,languges):
     df_tweets = pd.read_csv(f'{input}.csv')
     df_twitter_new =['user_id','username','name','tweet','language','likes_count']
