@@ -1,4 +1,3 @@
-import imp
 import streamlit as st
 import os
 import functions
@@ -9,16 +8,6 @@ if "button_clicked" not in st.session_state:
 
 def callback():
     st.session_state.button_clicked = True
-
-def featchData(hashtag_name,fromDate,numberOfLikes):
-    tweets = twint.Config
-    tweets.Search = [hashtag_name]
-    tweets.Limit = 100
-    tweets.Min_likes =numberOfLikes
-    tweets.Since = fromDate
-    tweets.Store_csv = True
-    tweets.Output = f'{hashtag_name}.csv'
-    twint.run.Search(tweets)
 
 st.title('Just Put Any HASHTAG YOU Want To Analys it  !!!')
 text_Input = st.text_input('put Hashtag',placeholder="#twitter")
@@ -52,7 +41,7 @@ with space3:
     analysButton = st.button('lets Analyize',on_click= callback)
     
 if analysButton or st.session_state.button_clicked:
-    featchData(text_Input,str(dateInputIn),numberOfLikes)
+    functions.featchData(text_Input,str(dateInputIn),numberOfLikes)
     df = functions.getData(text_Input,selectBox)
 
     st.markdown("### Data preview")
@@ -64,8 +53,9 @@ if analysButton or st.session_state.button_clicked:
         ,index=0)
 
         df['tweet'] = df['tweet'].map(lambda x : functions.cleaner(x,selectBox))
-        df = functions.anlalyseTheTweets(df)
-        df['Label'] = df['sentiment'].apply(functions.sentiment_category)
+        df = functions.anlalyseTheTweets(df,selectBox)
+        if selectBox == 'en':
+            df['Label'] = df['sentiment'].apply(functions.sentiment_category)
 
         if selectSentiment != 'All':
             df = df[df['Label'] == selectSentiment]
@@ -77,7 +67,8 @@ if analysButton or st.session_state.button_clicked:
             st.dataframe(df.head(10),1000,500)
             st.set_option('deprecation.showPyplotGlobalUse', False)
             plot = st.pyplot(functions.getWordCloud(df,selectBox))
+            # bar = st.pyplot(functions.barPlot(df))
             print(df.shape)
-            os.remove(f'{text_Input}.csv')
+            # os.remove(f'{text_Input}.csv')
         
     
