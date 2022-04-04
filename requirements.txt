@@ -1,3 +1,4 @@
+git+git://github.com/dataprojectswithMJ/twint.git
 ar_wordcloud==0.0.4
 matplotlib==3.3.4
 nltk==3.6.1
