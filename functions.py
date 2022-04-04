@@ -15,6 +15,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import confusion_matrix,accuracy_score, classification_report
 import seaborn as sns
+import asyncio
 data = pd.read_csv('AJGT.csv')
 def model(predect):
     data = pd.read_csv('AJGT.csv')
@@ -36,6 +37,7 @@ def featchData(hashtag_name,fromDate,numberOfLikes):
     tweets.Since = fromDate
     tweets.Store_csv = True
     tweets.Output = f'{hashtag_name}.csv'
+    asyncio.set_event_loop(asyncio.new_event_loop())
     twint.run.Search(tweets)
     
 def getData(input,languges):# 
@@ -134,14 +136,14 @@ def getWordCloud(df,lang):
         plt.tight_layout(pad =0)
     return fig
 
-def barPlot(df):
-    sentiment_Count = df['sentiment'].value_counts()
-    print(sentiment_Count)
-    fig = plt.figure(figsize=(10,5))
-    print([sentiment_Count.index])
-    sns.barplot([sentiment_Count.index], sentiment_Count.values, alpha=0.8)
-    plt.title('the Sentiment Analysis ')
-    plt.ylabel('Number of tweets', fontsize=16)
-    plt.xlabel('Sentiment', fontsize=16)
-    return fig
+# def barPlot(df):
+#     sentiment_Count = df['sentiment'].value_counts()
+#     print(sentiment_Count)
+#     fig = plt.figure(figsize=(10,5))
+#     print([sentiment_Count.index])
+#     sns.barplot([sentiment_Count.index], sentiment_Count.values, alpha=0.8)
+#     plt.title('the Sentiment Analysis ')
+#     plt.ylabel('Number of tweets', fontsize=16)
+#     plt.xlabel('Sentiment', fontsize=16)
+#     return fig
 
