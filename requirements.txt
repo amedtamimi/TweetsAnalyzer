@@ -8,3 +8,5 @@ scikit_learn==1.0.2
 seaborn==0.11.1
 streamlit==1.7.0
 wordcloud==1.8.1
+click<=8.0.4
+
