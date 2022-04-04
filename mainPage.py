@@ -67,7 +67,7 @@ if analysButton or st.session_state.button_clicked:
             st.dataframe(df.head(10),1000,500)
             st.set_option('deprecation.showPyplotGlobalUse', False)
             plot = st.pyplot(functions.getWordCloud(df,selectBox))
-            # bar = st.pyplot(functions.barPlot(df))
+            bar = st.pyplot(functions.barPlot(df))
             print(df.shape)
             # os.remove(f'{text_Input}.csv')
         

@@ -26,7 +26,7 @@ def model(predect):
     pipe.predict(X_test)
     X_new = [predect]
     neww_prediction = pipe.predict(X_new)
-    return neww_prediction
+    return neww_prediction[0]
 
 def featchData(hashtag_name,fromDate,numberOfLikes):
     tweets = twint.Config
@@ -134,12 +134,14 @@ def getWordCloud(df,lang):
         plt.tight_layout(pad =0)
     return fig
 
-# def barPlot(df):
-#     sentiment_Count = df['sentiment'].value_counts()
-#     fig = plt.figure(figsize=(10,5))
-#     sns.barplot(sentiment_Count.index, sentiment_Count.values, alpha=0.8)
-#     plt.title('the Sentiment Analysis ')
-#     plt.ylabel('Number of tweets', fontsize=16)
-#     plt.xlabel('Sentiment', fontsize=16)
-#     return fig
+def barPlot(df):
+    sentiment_Count = df['sentiment'].value_counts()
+    print(sentiment_Count)
+    fig = plt.figure(figsize=(10,5))
+    print([sentiment_Count.index])
+    sns.barplot([sentiment_Count.index], sentiment_Count.values, alpha=0.8)
+    plt.title('the Sentiment Analysis ')
+    plt.ylabel('Number of tweets', fontsize=16)
+    plt.xlabel('Sentiment', fontsize=16)
+    return fig
 
