@@ -108,7 +108,7 @@ def anlalyseTheTweets(df ,lang):
         for tweet in df['tweet']:
             list.append(model(tweet))
     else:
-        nltk.download('vader_lexicon')
+        # nltk.download('vader_lexicon')
         sid = SentimentIntensityAnalyzer()
         nltk.download('words')
         words = set(nltk.corpus.words.words())
