@@ -7,5 +7,5 @@ pymongo==4.1.0
 scikit_learn==1.0.2
 seaborn==0.11.1
 streamlit==1.7.0
-twint==2.1.21
+twint==2.1.20
 wordcloud==1.8.1
