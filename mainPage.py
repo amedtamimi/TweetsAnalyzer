@@ -1,10 +1,13 @@
+from pyexpat import ExpatError
 import streamlit as st
 import os
 import functions
 import numpy as np
 import twint
+import pymongo
+
 if "button_clicked" not in st.session_state:    
-    st.session_state.button_clicked = False
+        st.session_state.button_clicked = False
 
 def callback():
     st.session_state.button_clicked = True
@@ -39,8 +42,8 @@ with space5:
     pass
 with space3:
     analysButton = st.button('lets Analyize',on_click= callback)
-    
-if analysButton or st.session_state.button_clicked:
+    # or st.session_state.button_clicked
+if analysButton or st.session_state.button_clicked :
     df = functions.featchData(text_Input,str(dateInputIn),numberOfLikes,selectBox)
     st.markdown("### Data preview")
     st.dataframe(df.head(20),1000,410)
@@ -62,6 +65,7 @@ if analysButton or st.session_state.button_clicked:
         submit_button = st.form_submit_button(label="Submit")
 
     if submit_button:
+            st.markdown("### Cleaned Data and Sentiment ")
             st.dataframe(df.head(10),1000,500)
             st.set_option('deprecation.showPyplotGlobalUse', False)
             plot = st.pyplot(functions.getWordCloud(df,selectBox))

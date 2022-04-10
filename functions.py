@@ -13,10 +13,15 @@ from sklearn.model_selection import train_test_split,GridSearchCV
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.pipeline import make_pipeline
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.metrics import confusion_matrix,accuracy_score, classification_report
+from sklearn.metrics import confusion_matrix, accuracy_score, classification_report
 import seaborn as sns
 import asyncio
 import os
+
+def deleteInside(file):
+    f = open(file,"w+")
+    f.close
+
 data = pd.read_csv('AJGT.csv')
 def model(predect):
     data = pd.read_csv('AJGT.csv')
@@ -31,6 +36,7 @@ def model(predect):
     return neww_prediction[0]
 
 def featchData(hashtag_name,fromDate,numberOfLikes,languges):
+    header_list = ["id","conversation_id","created_at","date","time","timezone","user_id","username","name","place","tweet","language","mentions","urls","photos","replies_count","retweets_count","likes_count","hashtags","cashtags","link","retweet","quote_url","video","thumbnail","near","geo","source","user_rt_id","user_rt","retweet_id","reply_to","retweet_date","translate","trans_src","trans_dest"]
     result_loc = 'tweets.csv'
     tweets = twint.Config
     tweets.Search = hashtag_name
@@ -41,20 +47,14 @@ def featchData(hashtag_name,fromDate,numberOfLikes,languges):
     tweets.Output = result_loc
     asyncio.set_event_loop(asyncio.new_event_loop())
     twint.run.Search(tweets)
-    df_tweets = pd.read_csv('tweets.csv')
+    
+    df_tweets = pd.read_csv('tweets.csv',names=header_list)
     df_twitter_new =['user_id','username','name','tweet','language','likes_count']
     df_tweets = df_tweets[df_twitter_new]
     df_tweets = df_tweets[df_tweets['language'] == languges]
-    os.remove(result_loc)
+    deleteInside('tweets.csv')
     return df_tweets
     
-def getData(input,languges):# 
-    df_tweets = pd.read_csv('tweets.csv')
-    df_twitter_new =['user_id','username','name','tweet','language','likes_count']
-    df_tweets = df_tweets[df_twitter_new]
-    df_tweets = df_tweets[df_tweets['language'] == languges]
-    return df_tweets
-
 stop = ['انت','إذ', 'إذا', 'إذما', 'إذن', 'أف', 'أقل', 'أكثر', 'ألا', 'إلا', 'التي', 'الذي', 'الذين', 'اللاتي', 'اللائي', 'اللتان', 'اللتيا', 'اللتين', 'اللذان', 'اللذين', 'اللواتي', 'إلى', 'إليك', 'إليكم', 'إليكما', 'إليكن', 'أم', 'أما', 'أما', 'إما', 'أن', 'إن', 'إنا', 'أنا', 'أنت', 'أنتم', 'أنتما', 'أنتن', 'إنما', 'إنه', 'أنى', 'أنى', 'آه', 'آها', 'أو', 'أولاء', 'أولئك', 'أوه', 'آي', 'أي', 'أيها', 'إي', 'أين', 'أين', 'أينما', 'إيه', 'بخ', 'بس', 'بعد', 'بعض', 'بك', 'بكم', 'بكم', 'بكما', 'بكن', 'بل', 'بلى', 'بما', 'بماذا', 'بمن','انو', 'بنا', 'به', 'بها', 'بهم', 'بهما', 'بهن', 'بي','بسبب', 'بين', 'بيد',
             'تلك','انك', 'تلكم', 'تلكما','تكون','اشي', 'ته', 'تي', 'تين', 'تينك',
             'ثم', 'ثمة', 'حاشا', 'حبذا', 'حتى', 'حيث', 'حيثما',
@@ -77,6 +77,7 @@ stop = ['انت','إذ', 'إذا', 'إذما', 'إذن', 'أف', 'أقل', 'أك
             'هي', 'هيا', 'هيت', 'هيهات','اجعل', 'والذي', 'والذين', 'وإذ', 'وإذا', 'وإن',
             'ولا', 'ولكن', 'ولو', 'وما', 'ومن', 'وهو', 'يا' , 'من' , 'على', 'الى','هما', 'مع', 'هذه', 'التي', 'كما ', 'كنت','ذلك ', 'لذا', 'عن', 'في','ان','كان','كانت','الى','قبل','أنه','تم'
             ,'وقال','قال','فى','وقد','قد','ولم','وذلك','ذلك','يكون','او','وهذه','وهي ','وين','وبعد','لان','وهذا','عندها','جدا','بأن','انه','الي']
+
 @sst.cache
 def cleaner(tweet,lang):
     if lang == 'ar':
@@ -98,6 +99,7 @@ def cleaner(tweet,lang):
         tweet = " ".join(w for w in nltk.wordpunct_tokenize(tweet) \
     if w.lower() in words or not w.isalpha())
     return tweet
+
 @sst.cache
 def anlalyseTheTweets(df ,lang):
     list  = []
@@ -116,6 +118,7 @@ def anlalyseTheTweets(df ,lang):
     df['sentiment'] = pd.Series(list)
     return df.head(20)
 
+
 def sentiment_category(sentiment):
         label = ''
         if(sentiment>0):
@@ -125,6 +128,7 @@ def sentiment_category(sentiment):
         else:
             label = 'negative'
         return(label)
+
 
 def getWordCloud(df,lang):
     allTweets = ' '.join([twts for twts in df['tweet']])
@@ -137,7 +141,7 @@ def getWordCloud(df,lang):
         plt.axis('off')
         plt.tight_layout(pad =0)
     else:
-        wordCloud =  WordCloud(width=1200, height=600, colormap='Spectral').generate(allTweets)
+        wordCloud =  WordCloud(width=1200, height=600,background_color="white").generate(allTweets)
         fig = plt.figure(figsize=(20,10))
         plt.imshow(wordCloud, interpolation='bilinear')  
         plt.axis('off')
