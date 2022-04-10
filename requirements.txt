@@ -7,6 +7,6 @@ pymongo==4.1.0
 scikit_learn==1.0.2
 seaborn==0.11.1
 streamlit==1.7.0
-git+git://github.com/antoinecomp/twint.git
+git+https://github.com/antoinecomp/twint.git
 wordcloud==1.8.1
 click<=8.0.4
