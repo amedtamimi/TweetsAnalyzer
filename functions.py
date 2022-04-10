@@ -17,7 +17,7 @@ from sklearn.metrics import confusion_matrix, accuracy_score, classification_rep
 import seaborn as sns
 import asyncio
 import os
-
+import pymongo
 def deleteInside(file):
     f = open(file,"w+")
     f.close
@@ -52,8 +52,24 @@ def featchData(hashtag_name,fromDate,numberOfLikes,languges):
     df_twitter_new =['user_id','username','name','tweet','language','likes_count']
     df_tweets = df_tweets[df_twitter_new]
     df_tweets = df_tweets[df_tweets['language'] == languges]
+    
+    client=pymongo.MongoClient()
+    connection = pymongo.MongoClient("mongodb+srv://tweet:tweet@cluster0.u9gul.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+    db=connection["tweets_db"]    
+    collection=db["tweets_records"]
+    
+    df_tweets.reset_index(inplace=True)
+    data_dict = df_tweets.to_dict("records")
+    collection.insert_one({"index":"tweet","data":data_dict})
+
+    cursor = collection.find_one({"index":"tweet"})
+    entries=list(cursor["data"])
+    entries[:]
+    df=pd.DataFrame(entries)
+    df.set_index("user_id",inplace=True)
+    collection.delete_many({})
     deleteInside('tweets.csv')
-    return df_tweets
+    return df
     
 stop = ['انت','إذ', 'إذا', 'إذما', 'إذن', 'أف', 'أقل', 'أكثر', 'ألا', 'إلا', 'التي', 'الذي', 'الذين', 'اللاتي', 'اللائي', 'اللتان', 'اللتيا', 'اللتين', 'اللذان', 'اللذين', 'اللواتي', 'إلى', 'إليك', 'إليكم', 'إليكما', 'إليكن', 'أم', 'أما', 'أما', 'إما', 'أن', 'إن', 'إنا', 'أنا', 'أنت', 'أنتم', 'أنتما', 'أنتن', 'إنما', 'إنه', 'أنى', 'أنى', 'آه', 'آها', 'أو', 'أولاء', 'أولئك', 'أوه', 'آي', 'أي', 'أيها', 'إي', 'أين', 'أين', 'أينما', 'إيه', 'بخ', 'بس', 'بعد', 'بعض', 'بك', 'بكم', 'بكم', 'بكما', 'بكن', 'بل', 'بلى', 'بما', 'بماذا', 'بمن','انو', 'بنا', 'به', 'بها', 'بهم', 'بهما', 'بهن', 'بي','بسبب', 'بين', 'بيد',
             'تلك','انك', 'تلكم', 'تلكما','تكون','اشي', 'ته', 'تي', 'تين', 'تينك',
@@ -78,7 +94,7 @@ stop = ['انت','إذ', 'إذا', 'إذما', 'إذن', 'أف', 'أقل', 'أك
             'ولا', 'ولكن', 'ولو', 'وما', 'ومن', 'وهو', 'يا' , 'من' , 'على', 'الى','هما', 'مع', 'هذه', 'التي', 'كما ', 'كنت','ذلك ', 'لذا', 'عن', 'في','ان','كان','كانت','الى','قبل','أنه','تم'
             ,'وقال','قال','فى','وقد','قد','ولم','وذلك','ذلك','يكون','او','وهذه','وهي ','وين','وبعد','لان','وهذا','عندها','جدا','بأن','انه','الي']
 
-@sst.cache
+
 def cleaner(tweet,lang):
     if lang == 'ar':
         tweet = " ".join([word for word in tokenize(tweet,conditions=is_arabicrange,   morphs=strip_tashkeel) if not word in stop] )
@@ -89,32 +105,32 @@ def cleaner(tweet,lang):
         tweet = re.sub("ة", "ه", tweet)
         tweet = re.sub("گ", "ك", tweet)
         
-    else:
-        #nltk.download('words')
-        words = set(nltk.corpus.words.words())
-        tweet = re.sub("@[A-Za-z0-9]+","",tweet)
-        tweet = re.sub(r"(?:\@|http?\://|https?\://|www)\S+", "", tweet) 
-        tweet = " ".join(tweet.split())
-        tweet = tweet.replace("#", "").replace("_", " ") 
-        tweet = " ".join(w for w in nltk.wordpunct_tokenize(tweet) \
-    if w.lower() in words or not w.isalpha())
+    # else:
+    #     #nltk.download('words')
+    #     words = set(nltk.corpus.words.words())
+    #     tweet = re.sub("@[A-Za-z0-9]+","",tweet)
+    #     tweet = re.sub(r"(?:\@|http?\://|https?\://|www)\S+", "", tweet) 
+    #     tweet = " ".join(tweet.split())
+    #     tweet = tweet.replace("#", "").replace("_", " ") 
+    #     tweet = " ".join(w for w in nltk.wordpunct_tokenize(tweet) \
+    # if w.lower() in words or not w.isalpha())
     return tweet
 
-@sst.cache
+
 def anlalyseTheTweets(df ,lang):
     list  = []
     if lang == 'ar':
         list = []
         for tweet in df['tweet']:
             list.append(model(tweet))
-    else:
-        # nltk.download('vader_lexicon')
-        sid = SentimentIntensityAnalyzer()
-        nltk.download('words')
-        words = set(nltk.corpus.words.words())
+    # else:
+    #     # # nltk.download('vader_lexicon')
+    #     # sid = SentimentIntensityAnalyzer()
+    #     # # nltk.download('words')
+    #     # # words = set(nltk.corpus.words.words())
     
-        for tweet in df['tweet']:
-            list.append((sid.polarity_scores(str(tweet)))['compound'])
+    #     # for tweet in df['tweet']:
+    #     #     list.append((sid.polarity_scores(str(tweet)))['compound'])
     df['sentiment'] = pd.Series(list)
     return df.head(20)
 
