@@ -18,6 +18,7 @@ import seaborn as sns
 import asyncio
 import os
 import pymongo
+
 def deleteInside(file):
     f = open(file,"w+")
     f.close
