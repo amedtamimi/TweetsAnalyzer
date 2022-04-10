@@ -1,8 +1,8 @@
 import streamlit as sst
-import nltk
+# import nltk
 import twint
 import re
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
+# from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import pandas as pd 
 import numpy as np
 from wordcloud import WordCloud
