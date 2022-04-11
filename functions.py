@@ -1,3 +1,5 @@
+# from calendar import c
+# from pyrsistent import T
 import streamlit as sst
 # import nltk
 import twint
@@ -37,39 +39,38 @@ def model(predect):
     return neww_prediction[0]
 
 def featchData(hashtag_name,fromDate,numberOfLikes,languges):
-    header_list = ["id","conversation_id","created_at","date","time","timezone","user_id","username","name","place","tweet","language","mentions","urls","photos","replies_count","retweets_count","likes_count","hashtags","cashtags","link","retweet","quote_url","video","thumbnail","near","geo","source","user_rt_id","user_rt","retweet_id","reply_to","retweet_date","translate","trans_src","trans_dest"]
-    result_loc = 'tweets.csv'
     tweets = twint.Config
     tweets.Search = hashtag_name
     tweets.Limit = 100
     tweets.Min_likes =numberOfLikes
     tweets.Since = fromDate
-    tweets.Store_csv = True
-    tweets.Output = result_loc
-    asyncio.set_event_loop(asyncio.new_event_loop())
+    tweets.MongoDBurl = "mongodb+srv://tweet:tweet@cluster0.u9gul.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+    tweets.MongoDB = "tweets_db"
+    tweets.MongoDBcollection = "tweets_records"
+    tweets.MongoDB = True
+    # asyncio.set_event_loop(asyncio.new_event_loop())
     twint.run.Search(tweets)
     
-    df_tweets = pd.read_csv('tweets.csv',names=header_list)
-    df_twitter_new =['user_id','username','name','tweet','language','likes_count']
-    df_tweets = df_tweets[df_twitter_new]
-    df_tweets = df_tweets[df_tweets['language'] == languges]
+    # df_tweets = pd.read_csv('tweets.csv',names=header_list)
+    # df_twitter_new =['user_id','username','name','tweet','language','likes_count']
+    # df_tweets = df_tweets[df_twitter_new]
+    # df_tweets = df_tweets[df_tweets['language'] == languges]
     
     client=pymongo.MongoClient()
     connection = pymongo.MongoClient("mongodb+srv://tweet:tweet@cluster0.u9gul.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
     db=connection["tweets_db"]    
     collection=db["tweets_records"]
     
-    df_tweets.reset_index(inplace=True)
-    data_dict = df_tweets.to_dict("records")
-    collection.insert_one({"index":"tweet","data":data_dict})
-
+    
     cursor = collection.find_one({"index":"tweet"})
     entries=list(cursor["data"])
-    entries[:]
+    # entries[:]
     df=pd.DataFrame(entries)
+    dfn = ['user_id','username','name','tweet','language','likes_count']
+    df = df[dfn]
+    df = df[df['language'] == languges]
     df.set_index("user_id",inplace=True)
-    collection.delete_many({})
-    deleteInside('tweets.csv')
+    
     return df
     
 stop = ['انت','إذ', 'إذا', 'إذما', 'إذن', 'أف', 'أقل', 'أكثر', 'ألا', 'إلا', 'التي', 'الذي', 'الذين', 'اللاتي', 'اللائي', 'اللتان', 'اللتيا', 'اللتين', 'اللذان', 'اللذين', 'اللواتي', 'إلى', 'إليك', 'إليكم', 'إليكما', 'إليكن', 'أم', 'أما', 'أما', 'إما', 'أن', 'إن', 'إنا', 'أنا', 'أنت', 'أنتم', 'أنتما', 'أنتن', 'إنما', 'إنه', 'أنى', 'أنى', 'آه', 'آها', 'أو', 'أولاء', 'أولئك', 'أوه', 'آي', 'أي', 'أيها', 'إي', 'أين', 'أين', 'أينما', 'إيه', 'بخ', 'بس', 'بعد', 'بعض', 'بك', 'بكم', 'بكم', 'بكما', 'بكن', 'بل', 'بلى', 'بما', 'بماذا', 'بمن','انو', 'بنا', 'به', 'بها', 'بهم', 'بهما', 'بهن', 'بي','بسبب', 'بين', 'بيد',
