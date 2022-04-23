@@ -1,10 +1,10 @@
 # from calendar import c
 # from pyrsistent import T
 import streamlit as sst
-# import nltk
+import nltk
 import twint
 import re
-# from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import pandas as pd 
 import numpy as np
 from wordcloud import WordCloud
@@ -20,10 +20,7 @@ import seaborn as sns
 import asyncio
 import os
 import pymongo
-
-def deleteInside(file):
-    f = open(file,"w+")
-    f.close
+import pymysql
 
 data = pd.read_csv('AJGT.csv')
 def model(predect):
@@ -41,38 +38,22 @@ def model(predect):
 def featchData(hashtag_name,fromDate,numberOfLikes,languges):
     tweets = twint.Config
     tweets.Search = hashtag_name
-    tweets.Limit = 100
+    tweets.Limit = 5
     tweets.Min_likes =numberOfLikes
     tweets.Since = fromDate
-    tweets.MongoDBurl = "mongodb+srv://tweet:tweet@cluster0.u9gul.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
-    tweets.MongoDB = "tweets_db"
-    tweets.MongoDBcollection = "tweets_records"
-    tweets.MongoDB = True
-    # asyncio.set_event_loop(asyncio.new_event_loop())
+    tweets.Database = True
     twint.run.Search(tweets)
-    
-    # df_tweets = pd.read_csv('tweets.csv',names=header_list)
-    # df_twitter_new =['user_id','username','name','tweet','language','likes_count']
-    # df_tweets = df_tweets[df_twitter_new]
-    # df_tweets = df_tweets[df_tweets['language'] == languges]
-    
-    client=pymongo.MongoClient()
-    connection = pymongo.MongoClient("mongodb+srv://tweet:tweet@cluster0.u9gul.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-    db=connection["tweets_db"]    
-    collection=db["tweets_records"]
-    
-    
-    cursor = collection.find_one({"index":"tweet"})
-    entries=list(cursor["data"])
-    # entries[:]
-    df=pd.DataFrame(entries)
-    dfn = ['user_id','username','name','tweet','language','likes_count']
-    df = df[dfn]
-    df = df[df['language'] == languges]
-    df.set_index("user_id",inplace=True)
-    
-    return df
-    
+    twint.run.Search(tweets)
+    con= pymysql.connect(host="tweets.cutfenvnir5l.us-west-2.rds.amazonaws.com",user="admin",password="12345678",database="twitter",charset='utf8mb4',cursorclass=pymysql.cursors.DictCursor,port=3304)
+    try:
+        with con.cursor() as cur:
+                cur.execute('SELECT user_id,screen_name,tweet,lang,likes_count FROM tweets')
+                rows = cur.fetchall()
+                df_tweets = pd.DataFrame(rows)
+                df_tweets = df_tweets[df_tweets['lang'] == languges]
+    finally:
+        con.close()    
+    return df_tweets  
 stop = ['انت','إذ', 'إذا', 'إذما', 'إذن', 'أف', 'أقل', 'أكثر', 'ألا', 'إلا', 'التي', 'الذي', 'الذين', 'اللاتي', 'اللائي', 'اللتان', 'اللتيا', 'اللتين', 'اللذان', 'اللذين', 'اللواتي', 'إلى', 'إليك', 'إليكم', 'إليكما', 'إليكن', 'أم', 'أما', 'أما', 'إما', 'أن', 'إن', 'إنا', 'أنا', 'أنت', 'أنتم', 'أنتما', 'أنتن', 'إنما', 'إنه', 'أنى', 'أنى', 'آه', 'آها', 'أو', 'أولاء', 'أولئك', 'أوه', 'آي', 'أي', 'أيها', 'إي', 'أين', 'أين', 'أينما', 'إيه', 'بخ', 'بس', 'بعد', 'بعض', 'بك', 'بكم', 'بكم', 'بكما', 'بكن', 'بل', 'بلى', 'بما', 'بماذا', 'بمن','انو', 'بنا', 'به', 'بها', 'بهم', 'بهما', 'بهن', 'بي','بسبب', 'بين', 'بيد',
             'تلك','انك', 'تلكم', 'تلكما','تكون','اشي', 'ته', 'تي', 'تين', 'تينك',
             'ثم', 'ثمة', 'حاشا', 'حبذا', 'حتى', 'حيث', 'حيثما',
@@ -107,15 +88,15 @@ def cleaner(tweet,lang):
         tweet = re.sub("ة", "ه", tweet)
         tweet = re.sub("گ", "ك", tweet)
         
-    # else:
-    #     #nltk.download('words')
-    #     words = set(nltk.corpus.words.words())
-    #     tweet = re.sub("@[A-Za-z0-9]+","",tweet)
-    #     tweet = re.sub(r"(?:\@|http?\://|https?\://|www)\S+", "", tweet) 
-    #     tweet = " ".join(tweet.split())
-    #     tweet = tweet.replace("#", "").replace("_", " ") 
-    #     tweet = " ".join(w for w in nltk.wordpunct_tokenize(tweet) \
-    # if w.lower() in words or not w.isalpha())
+    else:
+        #nltk.download('words')
+        words = set(nltk.corpus.words.words())
+        tweet = re.sub("@[A-Za-z0-9]+","",tweet)
+        tweet = re.sub(r"(?:\@|http?\://|https?\://|www)\S+", "", tweet) 
+        tweet = " ".join(tweet.split())
+        tweet = tweet.replace("#", "").replace("_", " ") 
+        tweet = " ".join(w for w in nltk.wordpunct_tokenize(tweet) \
+    if w.lower() in words or not w.isalpha())
     return tweet
 
 
@@ -125,16 +106,16 @@ def anlalyseTheTweets(df ,lang):
         list = []
         for tweet in df['tweet']:
             list.append(model(tweet))
-    # else:
-    #     # # nltk.download('vader_lexicon')
-    #     # sid = SentimentIntensityAnalyzer()
-    #     # # nltk.download('words')
-    #     # # words = set(nltk.corpus.words.words())
+    else:
+        nltk.download('vader_lexicon')
+        sid = SentimentIntensityAnalyzer()
+        nltk.download('words')
+        words = set(nltk.corpus.words.words())
     
-    #     # for tweet in df['tweet']:
-    #     #     list.append((sid.polarity_scores(str(tweet)))['compound'])
+        for tweet in df['tweet']:
+            list.append((sid.polarity_scores(str(tweet)))['compound'])
     df['sentiment'] = pd.Series(list)
-    return df.head(20)
+    return df
 
 
 def sentiment_category(sentiment):
@@ -164,4 +145,14 @@ def getWordCloud(df,lang):
         plt.imshow(wordCloud, interpolation='bilinear')  
         plt.axis('off')
         plt.tight_layout(pad =0)
+    return fig
+
+def barblot(df,lang):
+    # bar = (df['sentiment'].value_counts().plot(kind = 'bar',title = 'Is There An Emotion In The Tweet?'))
+    fig = plt.figure(figsize=(20,10))
+    if lang  == 'ar':
+        sns.countplot(x=df['sentiment'])
+    else:
+        sns.countplot(x=df['Label'])
+    plt,plt.plot
     return fig

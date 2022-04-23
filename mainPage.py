@@ -3,21 +3,13 @@ import streamlit as st
 import os
 import functions
 import numpy as np
-
-
-if "button_clicked" not in st.session_state:    
-        st.session_state.button_clicked = False
-
-def callback():
-    st.session_state.button_clicked = True
-
 st.title('Just Put Any HASHTAG YOU Want To Analys it  !!!')
 text_Input = st.text_input('put Hashtag',placeholder="#twitter")
 def getCountry() -> np.ndarray:
     array = np.array(['ar','en'])
     return array
 
-col1, col2, col3 , col4= st.columns(4)
+col1, col2, col3 , col4, col5,col6= st.columns(6)
 with col1:
     selectBox = st.selectbox('select Language',getCountry())
     print(selectBox)
@@ -29,7 +21,10 @@ with col3:
     
 with col4:
     numberOfLikes = st.text_input('number of likes')
-
+with col5:
+    selectSentiment = st.selectbox('sentiment type',['All','positive','natural','negative'],index=0)
+with col6:
+    wordCloud = st.selectbox('wordCloud sen',['All','Positive ','natural','negative '])
 space1, spac2 , space3, space4 , space5 = st.columns(5)
 with space1:
     pass
@@ -40,33 +35,29 @@ with space4:
 with space5:
     pass
 with space3:
-    analysButton = st.button('lets Analyize',on_click= callback)
-    # or st.session_state.button_clicked
-if analysButton or st.session_state.button_clicked :
+    if "button_clicked" not in st.session_state:    
+            st.session_state.button_clicked = False
+    def callback():
+        st.session_state.button_clicked = True
+    analysButton = st.button('lets Analyize')
+
+if analysButton:
     df = functions.featchData(text_Input,str(dateInputIn),numberOfLikes,selectBox)
     st.markdown("### Data preview")
     st.dataframe(df.head(20),1000,410)
+    df['tweet'] = df['tweet'].map(lambda x : functions.cleaner(x,selectBox))
+    df = functions.anlalyseTheTweets(df,selectBox)
 
-    with st.form(key='myForm'):
-        st.markdown('### Chose tyep of analyze data by sentiment ')
-        selectSentiment = st.selectbox('sentiment type',['All','positive','natural','negative']
-        ,index=0)
-
-        df['tweet'] = df['tweet'].map(lambda x : functions.cleaner(x,selectBox))
-        df = functions.anlalyseTheTweets(df,selectBox)
-        if selectBox == 'en':
-            df['Label'] = df['sentiment'].apply(functions.sentiment_category)
-
+    if selectBox == 'en':
+        df['Label'] = df['sentiment'].apply(functions.sentiment_category)
         if selectSentiment != 'All':
             df = df[df['Label'] == selectSentiment]
+    st.markdown("### Cleaned Data and Sentiment ")
+    st.dataframe(df.head(20),1000,500)
 
-        wordCloud = st.selectbox('chose wordCloud sentiment',['All Words','Positive Words','natural Words','negative Words'])
-        submit_button = st.form_submit_button(label="Submit")
+    st.set_option('deprecation.showPyplotGlobalUse', False)
+    plot = st.pyplot(functions.getWordCloud(df,selectBox))
 
-    if submit_button:
-            st.markdown("### Cleaned Data and Sentiment ")
-            st.dataframe(df.head(10),1000,500)
-            st.set_option('deprecation.showPyplotGlobalUse', False)
-            plot = st.pyplot(functions.getWordCloud(df,selectBox))
+    barPlot  = st.pyplot(functions.barblot(df,selectBox))
         
     
