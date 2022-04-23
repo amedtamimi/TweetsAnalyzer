@@ -3,6 +3,12 @@ import streamlit as st
 import os
 import functions
 import numpy as np
+from PIL import Image
+
+image = Image.open('raw/twitter-logo.png')
+sid1 = st.columns(1)
+with sid1:
+    st.image(image=image)
 st.title('Just Put Any HASHTAG YOU Want To Analys it  !!!')
 text_Input = st.text_input('put Hashtag',placeholder="#twitter")
 def getCountry() -> np.ndarray:
