@@ -89,7 +89,7 @@ def cleaner(tweet,lang):
         tweet = re.sub("گ", "ك", tweet)
         
     else:
-        #nltk.download('words')
+        nltk.download('words')
         words = set(nltk.corpus.words.words())
         tweet = re.sub("@[A-Za-z0-9]+","",tweet)
         tweet = re.sub(r"(?:\@|http?\://|https?\://|www)\S+", "", tweet) 
