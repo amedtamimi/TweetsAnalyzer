@@ -6,9 +6,11 @@ import numpy as np
 from PIL import Image
 
 image = Image.open('raw/twitter-logo.png')
-sid1 = st.columns(1)
-with sid1:
-    st.image(image=image)
+side1,side2 = st.columns(2)
+with side1:
+    st.image(image,width=100,output_format='outo',channels='RGB')
+with side2:
+    pass
 st.title('Just Put Any HASHTAG YOU Want To Analys it  !!!')
 text_Input = st.text_input('put Hashtag',placeholder="#twitter")
 def getCountry() -> np.ndarray:
