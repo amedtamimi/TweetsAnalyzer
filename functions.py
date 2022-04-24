@@ -121,11 +121,11 @@ def anlalyseTheTweets(df ,lang):
 def sentiment_category(sentiment):
         label = ''
         if(sentiment>0):
-            label = 'positive'
+            label = 'Positive'
         elif(sentiment == 0):
-            label = 'neutral'
+            label = 'Neutral'
         else:
-            label = 'negative'
+            label = 'Negative'
         return(label)
 
 

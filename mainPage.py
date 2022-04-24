@@ -30,9 +30,9 @@ with col3:
 with col4:
     numberOfLikes = st.text_input('number of likes')
 with col5:
-    selectSentiment = st.selectbox('sentiment type',['All','positive','natural','negative'],index=0)
+    selectSentiment = st.selectbox('sentiment type',['All','Positive','Natural','Negative'],index=0)
 with col6:
-    wordCloud = st.selectbox('wordCloud sen',['All','Positive ','natural','negative '])
+    wordCloud = st.selectbox('wordCloud sen',['All','Positive ','Natural','Negative'])
 space1, spac2 , space3, space4 , space5 = st.columns(5)
 with space1:
     pass
@@ -60,6 +60,9 @@ if analysButton:
         df['Label'] = df['sentiment'].apply(functions.sentiment_category)
         if selectSentiment != 'All':
             df = df[df['Label'] == selectSentiment]
+    else:
+        if(selectSentiment != 'All'):
+            df = df[df['sentiment'] == selectSentiment]
     st.markdown("### Cleaned Data and Sentiment ")
     st.dataframe(df.head(20),1000,500)
 
