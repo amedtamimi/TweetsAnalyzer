@@ -44,7 +44,7 @@ def featchData(hashtag_name,fromDate,numberOfLikes,languges):
     tweets.Database = True
     twint.run.Search(tweets)
     twint.run.Search(tweets)
-    con= pymysql.connect(host="tweets.cutfenvnir5l.us-west-2.rds.amazonaws.com",user="admin",password="12345678",database="twitter",charset='utf8mb4',cursorclass=pymysql.cursors.DictCursor,port=3304)
+    con= pymysql.connect(host="tweets.cutfenvnir5l.us-west-2.rds.amazonaws.com",user=sst.secrets["db_username"],password=sst.secrets["db_password"],database="twitter",charset='utf8mb4',cursorclass=pymysql.cursors.DictCursor,port=3304)
     try:
         with con.cursor() as cur:
                 cur.execute('SELECT user_id,screen_name,tweet,lang,likes_count FROM tweets')
