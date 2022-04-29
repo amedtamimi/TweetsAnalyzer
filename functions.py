@@ -1,12 +1,9 @@
-# from calendar import c
-# from pyrsistent import T
 import streamlit as sst
 import nltk
 import twint
 import re
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import pandas as pd 
-import numpy as np
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 from pyarabic.araby import tokenize,is_arabicrange,strip_tashkeel
@@ -18,8 +15,6 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import confusion_matrix, accuracy_score, classification_report
 import seaborn as sns
 import asyncio
-import os
-import pymongo
 import pymysql
 
 data = pd.read_csv('AJGT.csv')
@@ -44,6 +39,7 @@ def featchData(hashtag_name,fromDate,numberOfLikes,languges):
     tweets.Database = True
     twint.run.Search(tweets)
     twint.run.Search(tweets)
+
     con= pymysql.connect(host="tweets.cutfenvnir5l.us-west-2.rds.amazonaws.com",user=sst.secrets["db_username"],password=sst.secrets["db_password"],database="twitter",charset='utf8mb4',cursorclass=pymysql.cursors.DictCursor,port=3304)
     try:
         with con.cursor() as cur:
@@ -51,9 +47,16 @@ def featchData(hashtag_name,fromDate,numberOfLikes,languges):
                 rows = cur.fetchall()
                 df_tweets = pd.DataFrame(rows)
                 df_tweets = df_tweets[df_tweets['lang'] == languges]
+                
     finally:
+        con.cursor().execute('DELETE FROM tweets')
+        con.commit()
         con.close()    
     return df_tweets  
+
+
+
+
 stop = ['انت','إذ', 'إذا', 'إذما', 'إذن', 'أف', 'أقل', 'أكثر', 'ألا', 'إلا', 'التي', 'الذي', 'الذين', 'اللاتي', 'اللائي', 'اللتان', 'اللتيا', 'اللتين', 'اللذان', 'اللذين', 'اللواتي', 'إلى', 'إليك', 'إليكم', 'إليكما', 'إليكن', 'أم', 'أما', 'أما', 'إما', 'أن', 'إن', 'إنا', 'أنا', 'أنت', 'أنتم', 'أنتما', 'أنتن', 'إنما', 'إنه', 'أنى', 'أنى', 'آه', 'آها', 'أو', 'أولاء', 'أولئك', 'أوه', 'آي', 'أي', 'أيها', 'إي', 'أين', 'أين', 'أينما', 'إيه', 'بخ', 'بس', 'بعد', 'بعض', 'بك', 'بكم', 'بكم', 'بكما', 'بكن', 'بل', 'بلى', 'بما', 'بماذا', 'بمن','انو', 'بنا', 'به', 'بها', 'بهم', 'بهما', 'بهن', 'بي','بسبب', 'بين', 'بيد',
             'تلك','انك', 'تلكم', 'تلكما','تكون','اشي', 'ته', 'تي', 'تين', 'تينك',
             'ثم', 'ثمة', 'حاشا', 'حبذا', 'حتى', 'حيث', 'حيثما',
@@ -74,8 +77,9 @@ stop = ['انت','إذ', 'إذا', 'إذما', 'إذن', 'أف', 'أقل', 'أك
             'هاتين', 'هاك', 'هاهنا', 'هذا', 'هذان', 'هذه', 'هذي', 'هذين', 'هكذا',
             'هل', 'هلا', 'هم', 'هما', 'هن', 'هنا', 'هناك', 'هنالك', 'هو', 'هؤلاء',
             'هي', 'هيا', 'هيت', 'هيهات','اجعل', 'والذي', 'والذين', 'وإذ', 'وإذا', 'وإن',
-            'ولا', 'ولكن', 'ولو', 'وما', 'ومن', 'وهو', 'يا' , 'من' , 'على', 'الى','هما', 'مع', 'هذه', 'التي', 'كما ', 'كنت','ذلك ', 'لذا', 'عن', 'في','ان','كان','كانت','الى','قبل','أنه','تم'
+            'ولا', 'ولكن', 'ولو', 'وما', 'ومن', 'وهو', 'يا' , 'من' , 'على', 'الى','هما', 'مع', 'هذه', 'التي', 'كما ', 'كنت','ذلك ', 'لذا', 'عن', 'في','ان','كان','كانت','وفي','شيء','الى','قبل','أنه','تم'
             ,'وقال','قال','فى','وقد','قد','ولم','وذلك','ذلك','يكون','او','وهذه','وهي ','وين','وبعد','لان','وهذا','عندها','جدا','بأن','انه','الي']
+
 
 
 def cleaner(tweet,lang):
@@ -98,6 +102,7 @@ def cleaner(tweet,lang):
         tweet = " ".join(w for w in nltk.wordpunct_tokenize(tweet) \
     if w.lower() in words or not w.isalpha())
     return tweet
+
 
 
 def anlalyseTheTweets(df ,lang):
@@ -129,6 +134,7 @@ def sentiment_category(sentiment):
         return(label)
 
 
+
 def getWordCloud(df,lang):
     allTweets = ' '.join([twts for twts in df['tweet']])
     if lang == 'ar':
@@ -146,6 +152,7 @@ def getWordCloud(df,lang):
         plt.axis('off')
         plt.tight_layout(pad =0)
     return fig
+
 
 def barblot(df,lang):
     # bar = (df['sentiment'].value_counts().plot(kind = 'bar',title = 'Is There An Emotion In The Tweet?'))

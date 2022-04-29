@@ -3,12 +3,12 @@ import streamlit as st
 import os
 import functions
 import numpy as np
-from PIL import Image
 
-image = Image.open('raw/twitter-logo.png')
+st.set_page_config(page_icon="🐤", page_title="Twitter Sentiment Analyzer")
+
 side1,side2 = st.columns(2)
 with side1:
-    st.image(image,width=100,output_format='outo',channels='RGB')
+    st.image("raw/logoOfficial.png",width=50)
 with side2:
     pass
 st.title('Just Put Any HASHTAG YOU Want To Analys it  !!!')
