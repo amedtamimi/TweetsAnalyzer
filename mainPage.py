@@ -14,7 +14,7 @@ with side1:
 with side2:
     pass
 
-st.title('Just Put Any HASHTAG YOU Want To Analys it  !!!')
+st.title('Just Put Any HASHTAG YOU Want To Analyse it  !!!')
 text_Input = st.text_input('put Hashtag',placeholder="#twitter")
 
 
@@ -35,13 +35,13 @@ with col3:
     dataInputOu = st.date_input('Date to:')
 
 with col4:
-    numberOfLikes = st.text_input('number of likes')
+    numberOfLikes = st.text_input('Number of likes')
 
 with col5:
-    selectSentiment = st.selectbox('sentiment type',['All','Positive','Natural','Negative'],index=0)
+    selectSentiment = st.selectbox('Sentiment type',['All','Positive','Natural','Negative'],index=0)
 
 with col6:
-    wordCloud = st.selectbox('wordCloud sen',['All','Positive ','Natural','Negative'])
+    wordCloud = st.selectbox('WordCloud sen',['All','Positive ','Natural','Negative'])
 
 space1, spac2 , space3, space4 , space5 = st.columns(5)
 

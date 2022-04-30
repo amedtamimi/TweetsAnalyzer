@@ -155,7 +155,6 @@ def getWordCloud(df,lang):
 
 
 def barblot(df,lang):
-    # bar = (df['sentiment'].value_counts().plot(kind = 'bar',title = 'Is There An Emotion In The Tweet?'))
     fig = plt.figure(figsize=(20,10))
     if lang  == 'ar':
         sns.countplot(x=df['sentiment'])
