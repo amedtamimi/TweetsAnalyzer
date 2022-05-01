@@ -67,7 +67,7 @@ with space3:
 if analysButton:
     df = functions.featchData(text_Input,str(dateInputIn),numberOfLikes,selectBox)
     st.markdown("### Data preview")
-    st.dataframe(df.head(20),1000,410)
+    st.dataframe(df.head(50),1000,410)
     df['tweet'] = df['tweet'].map(lambda x : functions.cleaner(x,selectBox))
     df = functions.anlalyseTheTweets(df,selectBox)
 
@@ -82,7 +82,7 @@ if analysButton:
             df = df[df['sentiment'] == selectSentiment]
 
     st.markdown("### Cleaned Data and Sentiment ")
-    st.dataframe(df.head(20),1000,500)
+    st.dataframe(df.head(50),1000,500)
 
     st.set_option('deprecation.showPyplotGlobalUse', False)
 
