@@ -17,7 +17,10 @@ import seaborn as sns
 import asyncio
 import pymysql
 
+
 data = pd.read_csv('AJGT.csv')
+
+
 def model(predect):
     data = pd.read_csv('AJGT.csv')
     feature = data.Feed
@@ -29,6 +32,7 @@ def model(predect):
     X_new = [predect]
     neww_prediction = pipe.predict(X_new)
     return neww_prediction[0]
+
 
 def featchData(hashtag_name,fromDate,numberOfLikes,languges):
     tweets = twint.Config
@@ -47,11 +51,12 @@ def featchData(hashtag_name,fromDate,numberOfLikes,languges):
                 rows = cur.fetchall()
                 df_tweets = pd.DataFrame(rows)
                 df_tweets = df_tweets[df_tweets['lang'] == languges]
-                
+
     finally:
         con.cursor().execute('DELETE FROM tweets')
         con.commit()
-        con.close()    
+        con.close()   
+
     return df_tweets  
 
 
@@ -101,6 +106,7 @@ def cleaner(tweet,lang):
         tweet = tweet.replace("#", "").replace("_", " ") 
         tweet = " ".join(w for w in nltk.wordpunct_tokenize(tweet) \
     if w.lower() in words or not w.isalpha())
+
     return tweet
 
 
@@ -111,26 +117,33 @@ def anlalyseTheTweets(df ,lang):
         list = []
         for tweet in df['tweet']:
             list.append(model(tweet))
+
     else:
         nltk.download('vader_lexicon')
         sid = SentimentIntensityAnalyzer()
         nltk.download('words')
         words = set(nltk.corpus.words.words())
-    
+
         for tweet in df['tweet']:
             list.append((sid.polarity_scores(str(tweet)))['compound'])
+
     df['sentiment'] = pd.Series(list)
+
     return df
 
 
 def sentiment_category(sentiment):
         label = ''
+
         if(sentiment>0):
             label = 'Positive'
+
         elif(sentiment == 0):
             label = 'Neutral'
+
         else:
             label = 'Negative'
+
         return(label)
 
 
@@ -145,12 +158,14 @@ def getWordCloud(df,lang):
         plt.imshow(wc, interpolation='bilinear')  
         plt.axis('off')
         plt.tight_layout(pad =0)
+
     else:
         wordCloud =  WordCloud(width=1200, height=600,background_color="white").generate(allTweets)
         fig = plt.figure(figsize=(20,10))
         plt.imshow(wordCloud, interpolation='bilinear')  
         plt.axis('off')
         plt.tight_layout(pad =0)
+
     return fig
 
 
@@ -158,7 +173,10 @@ def barblot(df,lang):
     fig = plt.figure(figsize=(20,10))
     if lang  == 'ar':
         sns.countplot(x=df['sentiment'])
+
     else:
         sns.countplot(x=df['Label'])
+
     plt,plt.plot
+
     return fig
