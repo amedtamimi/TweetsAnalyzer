@@ -89,5 +89,5 @@ if analysButton:
     plot = st.pyplot(functions.getWordCloud(df,selectBox))
 
     barPlot  = st.pyplot(functions.barblot(df,selectBox))
-        
+
     
