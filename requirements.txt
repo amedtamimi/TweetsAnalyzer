@@ -7,10 +7,9 @@ Pillow==10.3.0
 PyArabic==0.6.15
 pymongo==4.1.0
 pymysql==1.0.2
-scikit_learn==1.0.2
+scikit_learn==1.4.2
 seaborn==0.11.1
 streamlit==1.7.0
 git+https://github.com/amedtamimi/twint-1.git
 wordcloud==1.8.1
-click<=8.0.4
-
+click==8.0.4
